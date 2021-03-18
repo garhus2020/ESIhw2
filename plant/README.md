@@ -1,10 +1,4 @@
-# Postgres Bookmark Service
 
-## Postgres Docker
-
-`docker run --name bookmark-service-db -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres`
-
-SQL migrations are located under `db-setup` 
 
 ## Run service with docker-compose
 
@@ -14,21 +8,52 @@ Rebuild `docker-compose build`
 
 Stop `docker-compose down -v`
 
-## Manual test
+## use
 
-GET bookmarks `curl localhost:8080/bookmark`
+GET plants  `curl localhost:8080/plant`
 
-Create bookmark 
+Create plant in postgres 
 
 ```
-curl --location --request POST 'localhost:8080/bookmark' \
+curl --location --request POST 'localhost:8080/plant' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-"category":"general",
-"name":"YouTube",
-"uri":"https://youtube.com"
+"ident":"111",
+"name":"Car",
+"status":"available",
+"price":"4000"
 }'
+
 ```
+
+Create plant in mongodb 
+
+```
+curl --location --request POST 'localhost:8080/plantm' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+"ident":"111",
+"name":"Car",
+"status":"available",
+"price":"4000"
+}'
+
+```
+
+
+Check price for certain plant with ident
+
+```
+curl --location --request POST 'localhost:8080/price' --header 'Content-Type: application/json' --data-raw '{
+"ident":"111"
+}'
+
+
+```
+
+
+
+
 
 ## Check docker-compose logs
 All `docker-compose logs`
