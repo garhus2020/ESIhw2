@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
-	"net/http"
 
 	// SQL driver
 	// https://www.calhoun.io/why-we-import-sql-drivers-with-the-blank-identifier/
@@ -17,8 +18,9 @@ import (
 	// See https://golang.org/s/sqldrivers for a list of drivers.
 	_ "github.com/lib/pq"
 	//local imports
-	//repository "github.com/garhus2020/ESIhw2/plant/pkg/repository"
 
+	repository "github.com/garhus2020/ESIhw2/plant/pkg/repository"
+	handlers "github.com/garhus2020/ESIhw2/plant/pkg/handlers"
 )
 
 const (
@@ -55,12 +57,12 @@ func main() {
 		DB:       redisDB,
 	})
 
-	plantRepository := NewPlantRepository(dbConn)
-	plantmRepository := NewPlantmRepository(dbConn2)
-	orderRepository := NewOrderRepository(dbConn)
-	cacheRepository := NewCacheRepository(dbConn3)
-	orderHandler := NewOrderHandler(orderRepository)
-	plantHandler := NewPlantHandler(plantmRepository, plantRepository, cacheRepository)
+	plantRepository := repository.NewPlantRepository(dbConn)
+	plantmRepository := repository.NewPlantmRepository(dbConn2)
+	orderRepository := repository.NewOrderRepository(dbConn)
+	cacheRepository := repository.NewCacheRepository(dbConn3)
+	orderHandler := handlers.NewOrderHandler(orderRepository)
+	plantHandler := handlers.NewPlantHandler(plantmRepository, plantRepository, cacheRepository)
 	// mongooooooooooooooo
 
 	// construct application
