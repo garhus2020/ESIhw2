@@ -16,6 +16,9 @@ import (
 	// The sql package must be used in conjunction with a database driver. In this case PostgreSQL driver.
 	// See https://golang.org/s/sqldrivers for a list of drivers.
 	_ "github.com/lib/pq"
+	//local imports
+	//repository "github.com/garhus2020/ESIhw2/plant/pkg/repository"
+
 )
 
 const (
