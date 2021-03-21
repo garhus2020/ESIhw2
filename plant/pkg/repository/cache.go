@@ -7,6 +7,9 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"time"
+	"github.com/garhus2020/ESIhw2/plant/pkg/domain"
+	"github.com/go-redis/redis/v8"
+
 )
 
 type CacheRepository struct {
@@ -19,7 +22,7 @@ func NewCacheRepository(db *redis.Client) *CacheRepository {
 	}
 }
 
-func (r *CacheRepository) Create(request *Request) (*Request, error) {
+func (r *CacheRepository) Create(request *domain.Request) (*domain.Request, error) {
 	requestID := uuid.NewString()
 	request.ID = requestID
 	request.CreatedAt = time.Now()
@@ -31,15 +34,15 @@ func (r *CacheRepository) Create(request *Request) (*Request, error) {
 	return request, nil
 }
 
-func (r *CacheRepository) GetAll() ([]*Request, error) {
+func (r *CacheRepository) GetAll() ([]*domain.Request, error) {
 
 	res, err := r.db.HGetAll(context.Background(), "app:request").Result()
 	if err != nil {
 		return nil, fmt.Errorf("error getting requests, err: %v", err)
 	}
-	requests := []*Request{}
+	requests := []*domain.Request{}
 	for _, stringValue := range res {
-		b := &Request{}
+		b := &domain.Request{}
 		err := json.Unmarshal([]byte(stringValue), b)
 		if err != nil {
 			return nil, fmt.Errorf("error decoding result, err: %v", err)

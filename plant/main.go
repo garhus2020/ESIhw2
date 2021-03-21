@@ -8,6 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	//"github.com/garhus2020/ESIhw2/plant/pkg/handlers"
+
 	"log"
 	"net/http"
 
@@ -18,7 +20,6 @@ import (
 	_ "github.com/lib/pq"
 	//local imports
 	//repository "github.com/garhus2020/ESIhw2/plant/pkg/repository"
-
 )
 
 const (

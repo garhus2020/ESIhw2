@@ -7,6 +7,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/garhus2020/ESIhw2/plant/pkg/domain"
 )
 
 type PlantmRepository struct {
@@ -19,7 +20,7 @@ func NewPlantmRepository(db *mongo.Client) *PlantmRepository {
 	}
 }
 
-func (r *PlantmRepository) Create(plantm *Plantm) (*Plantm, error) {
+func (r *PlantmRepository) Create(plantm *domain.Plantm) (*domain.Plantm, error) {
 	collection := r.db.Database("local").Collection("plantm")
 
 	plantm.CreatedAt = time.Now()
@@ -32,15 +33,15 @@ func (r *PlantmRepository) Create(plantm *Plantm) (*Plantm, error) {
 	return plantm, nil
 }
 
-func (r *PlantmRepository) GetAll() ([]*Plantm, error) {
+func (r *PlantmRepository) GetAll() ([]*domain.Plantm, error) {
 	collection := r.db.Database("local").Collection("plantm")
 	cursor, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, fmt.Errorf("error getting plantms, err: %v", err)
 	}
-	plantms := []*Plantm{}
+	plantms := []*domain.Plantm{}
 	for cursor.Next(context.Background()) {
-		b := &Plantm{}
+		b := &domain.Plantm{}
 		err := cursor.Decode(&b)
 		if err != nil {
 			return nil, fmt.Errorf("error decoding result, err: %v", err)
@@ -61,7 +62,7 @@ func (r *PlantmRepository) GetOne(ident string) (string, error) {
 	// if err != nil {
 	// 	return "nil", fmt.Errorf("error getting plantms, err: %v", err)
 	// }
-	plantm := &Plantm{}
+	plantm := &domain.Plantm{}
 	filter := bson.M{"ident": ident}
 	err := collection.FindOne(context.Background(), filter).Decode(&plantm)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/garhus2020/ESIhw2/plant/pkg/domain"
 )
 
 
@@ -17,7 +18,7 @@ func NewPlantRepository(db *sql.DB) *PlantRepository {
 	}
 }
 
-func (r *PlantRepository) Create(plant *Plant) (*Plant, error) {
+func (r *PlantRepository) Create(plant *domain.Plant) (*domain.Plant, error) {
 	query := "INSERT into plant (ident, status, name, price) values($1, $2, $3, $4) RETURNING id, created_at"
 
 	row := r.db.QueryRowContext(context.Background(), query, plant.Ident, plant.Status, plant.Name, plant.Price)
@@ -33,16 +34,16 @@ func (r *PlantRepository) Create(plant *Plant) (*Plant, error) {
 	return plant, nil
 }
 
-func (r *PlantRepository) GetAll() ([]*Plant, error) {
+func (r *PlantRepository) GetAll() ([]*domain.Plant, error) {
 	query := "SELECT id, ident, status, name, price, created_at from plant"
 	rows, err := r.db.QueryContext(context.Background(), query)
 	if err != nil {
 		return nil, fmt.Errorf("error querying plants, err: %v", err)
 	}
 
-	plants := []*Plant{}
+	plants := []*domain.Plant{}
 	for rows.Next() {
-		b := &Plant{}
+		b := &domain.Plant{}
 		err := rows.Scan(&b.ID, &b.Ident, &b.Status, &b.Name, &b.Price, &b.CreatedAt)
 		if err != nil {
 			return nil, fmt.Errorf("error scaning query, err: %v", err)
