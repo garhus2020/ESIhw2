@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"github.com/garhus2020/ESIhw2/plant/pkg/repository"
+	"github.com/garhus2020/ESIhw2/plant/pkg/handler"
 
 	// SQL driver
 	// https://www.calhoun.io/why-we-import-sql-drivers-with-the-blank-identifier/
@@ -52,12 +54,12 @@ func main() {
 		DB:       redisDB,
 	})
 
-	plantRepository := NewPlantRepository(dbConn)
-	plantmRepository := NewPlantmRepository(dbConn2)
-	orderRepository := NewOrderRepository(dbConn)
-	cacheRepository := NewCacheRepository(dbConn3)
-	orderHandler := NewOrderHandler(orderRepository)
-	plantHandler := NewPlantHandler(plantmRepository, plantRepository, cacheRepository)
+	plantRepository := repository.NewPlantRepository(dbConn)
+	plantmRepository := repository.NewPlantmRepository(dbConn2)
+	orderRepository := repository.NewOrderRepository(dbConn)
+	cacheRepository := repository.NewCacheRepository(dbConn3)
+	orderHandler := handler.NewOrderHandler(orderRepository)
+	plantHandler := handler.NewPlantHandler(plantmRepository, plantRepository, cacheRepository)
 	// mongooooooooooooooo
 
 	// construct application

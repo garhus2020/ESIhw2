@@ -1,0 +1,15 @@
+# https://dev.to/plutov/docker-and-go-modules-3kkn
+FROM golang:1.15.6 as builder
+
+WORKDIR /app
+
+COPY go.mod .
+COPY go.sum .
+
+COPY . .
+RUN go mod download
+RUN go build -o plant_service
+EXPOSE 8081
+
+RUN echo "Executing tests"
+ENTRYPOINT ["go", "test"]
