@@ -12,12 +12,14 @@ import (
 	"net/http"
 	"github.com/garhus2020/ESIhw2/plant/pkg/repository"
 	"github.com/garhus2020/ESIhw2/plant/pkg/handler"
-
+	"github.com/graphql-go/graphql"
+	"github.com/garhus2020/ESIhw2/plant/pkg/handler/graphql/schema"
 	// SQL driver
 	// https://www.calhoun.io/why-we-import-sql-drivers-with-the-blank-identifier/
 	// The sql package must be used in conjunction with a database driver. In this case PostgreSQL driver.
 	// See https://golang.org/s/sqldrivers for a list of drivers.
 	_ "github.com/lib/pq"
+	"encoding/json"
 )
 
 const (
@@ -29,11 +31,37 @@ const (
 	redisDB            = 0  // use default DB
 )
 
+func executeQuery(query string, schema graphql.Schema) *graphql.Result {
+	result := graphql.Do(graphql.Params{
+		Schema:        schema,
+		RequestString: query,
+	})
+	if len(result.Errors) > 0 {
+		fmt.Printf("wrong result, unexpected errors: %v", result.Errors)
+	}
+	return result
+}
+
 func main() {
 	log.Println("Start plant server")
 
-	// open Postgres connection
-	dbConn, err := sql.Open("postgres", postgresConnection)
+	router := Router()
+	// setup http server
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", httpServicePort),
+		Handler: router,
+	}
+
+	err := srv.ListenAndServe()
+	if err != nil {
+		log.Fatalf("Could not start server")
+	}
+
+	log.Println("Stop plant server")
+}
+
+func Router() *mux.Router {
+    dbConn, err := sql.Open("postgres", postgresConnection)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,16 +100,9 @@ func main() {
 	router.HandleFunc("/price", plantHandler.GetPrice).Methods(http.MethodPost)
 	router.HandleFunc("/status", orderHandler.GetStatus).Methods(http.MethodPost)
 	router.HandleFunc("/requests", plantHandler.GetCache).Methods(http.MethodGet)
-	// setup http server
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", httpServicePort),
-		Handler: router,
-	}
-
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatalf("Could not start server")
-	}
-
-	log.Println("Stop plant server")
+	router.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
+		result := executeQuery(r.URL.Query().Get("query"), schema.TodoSchema)
+		json.NewEncoder(w).Encode(result)
+	})
+    return router
 }

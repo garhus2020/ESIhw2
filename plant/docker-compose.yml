@@ -3,6 +3,16 @@ services:
     build: . # uses Dockerfile in root dir to build the image
     ports:
       - 8080:8080
+  
+  plant-test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+
   postgres:
     build:
       context: .
@@ -17,6 +27,7 @@ services:
   mongo:
     image: mongo
     restart: always      
+  
 
 
   redis:
